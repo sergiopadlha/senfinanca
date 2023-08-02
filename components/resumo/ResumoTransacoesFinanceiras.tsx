@@ -16,16 +16,17 @@ export default function ResumoTransacoesFinanceiras() {
     useEffect(() => {
         const sumGanho = transacoesFinanceiras
             .filter(t => t.status === "Entrada")
-            .reduce((prev, transaction) => prev + transaction.valor, 0);
+            .reduce((prev, transaction) => prev + transaction.valor, 0)
 
         const sumGastos = transacoesFinanceiras
             .filter(t => t.status === "Saida")
-            .reduce((prev, transaction) => prev + transaction.valor, 0);
+            .reduce((prev, transaction) => prev + transaction.valor, 0)
 
-        setGastos(sumGastos);
-        setGanhos(sumGanho);
-        setTotal(sumGanho - sumGastos);
+        setGastos(sumGastos)
+        setGanhos(sumGanho)
+        setTotal(sumGanho - sumGastos)       
     }, [transacoesFinanceiras]);
+
     useEffect(()=> {        
         if (total > 0) setCorSaldo('green')
         if (total < 0) setCorSaldo('red')
@@ -65,16 +66,6 @@ export default function ResumoTransacoesFinanceiras() {
                     <Text fontSize="xl" color="gray">Saidas</Text>
 
                     <Text fontSize="2xl" fontWeight="semibold" color="red">- {formatValue(gastos)}</Text>
-                </VStack>
-            </HStack>
-
-            <HStack background="white" padding="8" borderRadius="8" flex={1} spacing="6">
-                <GiTakeMyMoney size="40" />
-
-                <VStack alignItems="initial">
-                    <Text fontSize="xl" color="gray">Saldo</Text>
-
-                    <Text fontSize="2xl" fontWeight="semibold">{formatValue(total)}</Text>
                 </VStack>
             </HStack>
         </HStack>

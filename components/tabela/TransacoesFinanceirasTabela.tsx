@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Thead, Tr, Th, Tbody, Td, IconButton, useDisclosure, Button, Badge, HStack, Text, VStack, Select } from '@chakra-ui/react'
-import { FiEdit2 } from 'react-icons/fi'
-import { GrClose } from 'react-icons/gr'
+// import { FiEdit2 } from 'react-icons/fi'
 import { RiAddFill } from 'react-icons/ri'
+import {AiOutlineEdit, AiFillDelete} from 'react-icons/ai'
 import { TransacoesFinanceiras, useTransacoesFinanceiras } from '../../context/TransacoesFinanceirasContext';
 import {TransacaoFinanceiraModalUpdate} from '../modal';
 import formatValue from '../../utils/formatValue';
@@ -70,7 +70,17 @@ export default function TransacoesFinanceirasTabela() {
                         variant='solid'
                     >
                         Nova transacao
-                    </Button>
+                    </Button>                    
+
+                    <Select 
+                        w="auto" 
+                        placeholder='Filtrar por tipo de transação' 
+                        onChange={e => handleFiltrarStatus(e.target.value)}
+                    >
+                        <option value="all">Todos</option>
+                        <option value="Entrada">Entrada</option>
+                        <option value="Saida">Saida</option>
+                    </Select>
 
                     <Select 
                         w="auto" 
@@ -82,26 +92,16 @@ export default function TransacoesFinanceirasTabela() {
                             <option key={cat} value={cat}>{cat}</option>
                         ))}
                     </Select>
-
-                    <Select 
-                        w="auto" 
-                        placeholder='Filtrar por tipo de transação' 
-                        onChange={e => handleFiltrarStatus(e.target.value)}
-                    >
-                        <option value="all">Todos</option>
-                        <option value="Entrada">Entrada</option>
-                        <option value="Saida">Saida</option>
-                    </Select>
                 </HStack>
             </HStack>
 
             <Table>
                 <Thead>
                     <Tr>
-                        <Th>Título</Th>
-                        <Th>Tipo</Th>
-                        <Th>Categoria</Th>
+                        <Th>Descrição</Th>
                         <Th>Data</Th>
+                        <Th>Categoria</Th>
+                        <Th>Tipo</Th>
                         <Th>Valor</Th>
                         <Th></Th>
                     </Tr>
@@ -111,6 +111,8 @@ export default function TransacoesFinanceirasTabela() {
                     {transacoesFinanceirasList.map(transacaoFinanceira => (
                         <Tr key={transacaoFinanceira.id}>
                             <Td>{transacaoFinanceira.titulo}</Td>
+                            <Td>{new Date(transacaoFinanceira.data).toLocaleDateString('pt-BR')}</Td>
+                            <Td>{transacaoFinanceira.categoria}</Td>
                             <Td>
                                 {transacaoFinanceira.status === 'Entrada' ? (
                                     <Badge colorScheme='green'>Entrada</Badge>
@@ -118,21 +120,19 @@ export default function TransacoesFinanceirasTabela() {
                                     <Badge colorScheme='red'>Saida</Badge>
                                 )}
                             </Td>
-                            <Td>{transacaoFinanceira.categoria}</Td>
-                            <Td>{new Date(transacaoFinanceira.data).toLocaleDateString('pt-BR')}</Td>
                             <Td>{formatValue(transacaoFinanceira.valor)}</Td>
                             <Td>
                                 <IconButton 
                                     onClick={() => updateTransacao(transacaoFinanceira)} 
                                     aria-label='Editar transacao' 
-                                    icon={<FiEdit2 />} 
+                                    icon={<AiOutlineEdit />} 
                                     isRound 
                                     marginRight={2} 
                                 />
                                 <IconButton 
                                     onClick={() => deleteTransacaoFinanceira(transacaoFinanceira.id)} 
                                     aria-label='Excluir transacao' 
-                                    icon={<GrClose color='red' />} 
+                                    icon={<AiFillDelete color='red' />} 
                                     isRound 
                                 />
                             </Td>
