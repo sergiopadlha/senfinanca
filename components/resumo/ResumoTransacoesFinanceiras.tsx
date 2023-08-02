@@ -8,9 +8,10 @@ import formatValue from '../../utils/formatValue';
 export default function ResumoTransacoesFinanceiras() {    
     const {transacoesFinanceiras} = useTransacoesFinanceiras()
 
-    const [gastos, setGastos ] = useState(0);
-    const [ganhos, setGanhos] = useState(0);
-    const [total, setTotal] = useState(0);
+    const [gastos, setGastos ] = useState(0)
+    const [ganhos, setGanhos] = useState(0)
+    const [total, setTotal] = useState(0)
+    const [corSaldo, setCorSaldo] = useState('black')
 
     useEffect(() => {
         const sumGanho = transacoesFinanceiras
@@ -25,6 +26,11 @@ export default function ResumoTransacoesFinanceiras() {
         setGanhos(sumGanho);
         setTotal(sumGanho - sumGastos);
     }, [transacoesFinanceiras]);
+    useEffect(()=> {        
+        if (total > 0) setCorSaldo('green')
+        if (total < 0) setCorSaldo('red')
+        if (total === 0) setCorSaldo('black')        
+    },[total])
 
     return (
         <HStack width="full">
