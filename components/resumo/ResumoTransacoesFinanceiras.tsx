@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { HStack, Text, VStack } from '@chakra-ui/react'
-import { GiReceiveMoney, GiPayMoney, GiTakeMyMoney } from 'react-icons/gi'
+import {AiOutlineArrowUp, AiOutlineArrowDown} from 'react-icons/ai'
+import { GrMoney } from 'react-icons/gr'
 import { useTransacoesFinanceiras } from '../../context/TransacoesFinanceirasContext';
 import formatValue from '../../utils/formatValue';
 
@@ -28,7 +29,21 @@ export default function ResumoTransacoesFinanceiras() {
     return (
         <HStack width="full">
             <HStack background="white" padding="8" borderRadius="8" flex={1} spacing="6">
-                <GiReceiveMoney size="40" />
+                <GrMoney size="40" />
+
+                <VStack alignItems="initial">
+                    <Text fontSize="xl" color="gray">
+                        Saldo
+                    </Text>
+
+                    <Text fontSize="2xl" fontWeight="semibold" color={corSaldo}>
+                        {formatValue(total)}
+                    </Text>
+                </VStack>
+            </HStack>
+
+            <HStack background="white" padding="8" borderRadius="8" flex={1} spacing="6">
+                <AiOutlineArrowUp color='green' size="40" />
 
                 <VStack alignItems="initial">
                     <Text fontSize="xl" color="gray">Entradas</Text>
@@ -38,7 +53,7 @@ export default function ResumoTransacoesFinanceiras() {
             </HStack>
 
             <HStack background="white" padding="8" borderRadius="8" flex={1} spacing="6">
-                <GiPayMoney size="40" />
+                <AiOutlineArrowDown color='red' size="40" />
 
                 <VStack alignItems="initial">
                     <Text fontSize="xl" color="gray">Saidas</Text>
