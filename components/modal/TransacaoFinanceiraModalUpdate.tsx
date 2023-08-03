@@ -1,18 +1,19 @@
-import { Button, DrawerProps, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, useDisclosure } from '@chakra-ui/react';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { TransacoesFinanceiras, useTransacoesFinanceiras } from '../../context/TransacoesFinanceirasContext';
+import React, {useState, useEffect} from 'react'
+import { Button, DrawerProps, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, useDisclosure } from '@chakra-ui/react'
+import { useForm } from 'react-hook-form'
+import { TransacoesFinanceiras, useTransacoesFinanceiras } from '../../context/TransacoesFinanceirasContext'
 
 type TransacaoFinanceiraModalUpdateProps = Omit<DrawerProps, 'children'> & {
-    transacaoFinanceira: TransacoesFinanceiras | undefined;
-};
+    transacaoFinanceira: TransacoesFinanceiras | undefined
+}
 
 type TransacaoFinanceiraForm =  {
-    titulo: string;
-    categoria: string;
-    status: 'Entrada' | 'Saida';
-    valor: string;
-};
+    titulo: string
+    categoria: string
+    status: 'Entrada' | 'Saida'
+    valor: string
+    formaPagamento: string
+}
 
 export default function TransacaoFinanceiraModalUpdate({ 
     isOpen, 
@@ -20,25 +21,26 @@ export default function TransacaoFinanceiraModalUpdate({
     transacaoFinanceira,
     ...props 
 }: TransacaoFinanceiraModalUpdateProps) {
-    const { categorias, updateTransacaoFinanceira, addTransacaoFinanceira } = useTransacoesFinanceiras();
+    const { categorias, formasPagamento, updateTransacaoFinanceira, addTransacaoFinanceira } = useTransacoesFinanceiras()
+    const { register, handleSubmit, watch } = useForm<TransacaoFinanceiraForm>({ mode: 'onTouched' })
+    const [isSaida, setIsSaida] = useState<boolean>(false)
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<TransacaoFinanceiraForm>({ mode: 'onTouched' });
+    const statusWatch = watch('status')
+
+    useEffect(()=> {
+        setIsSaida(statusWatch==='Saida')        
+    },[statusWatch])
 
     const handleGravaTransacao = (data: TransacaoFinanceiraForm) => {
-        const { titulo, valor, status, categoria } = data;
-        const formatedValue = parseFloat(valor);
+        const { titulo, valor, status, categoria, formaPagamento } = data
+        const formatedValue = parseFloat(valor)
         
         if ( transacaoFinanceira ) {
-            updateTransacaoFinanceira({...transacaoFinanceira, titulo, valor: formatedValue, status, categoria}, transacaoFinanceira.id);
+            updateTransacaoFinanceira({...transacaoFinanceira, titulo, valor: formatedValue, status, categoria, formaPagamento}, transacaoFinanceira.id)
         } else {
-            addTransacaoFinanceira({ data: new Date(), titulo, valor: formatedValue, categoria, status, id: Math.random()})
+            addTransacaoFinanceira({ data: new Date(), titulo, valor: formatedValue, categoria, status, formaPagamento, id: Math.random()})
         }
-
-        onClose();
+        onClose()
     }
 
     return (
@@ -77,6 +79,23 @@ export default function TransacaoFinanceiraModalUpdate({
                         </Select>
                     </FormControl>
         
+                    {isSaida && 
+                        <FormControl mt={4} isRequired>
+                            <FormLabel>Forma de pagamento</FormLabel>
+                            <Select 
+                                isRequired
+                                {...register('formaPagamento', {
+                                    required: 'Campo obrigatório.',
+                                })}
+                                {...(transacaoFinanceira && { defaultValue: transacaoFinanceira?.status })}
+                            >
+                                {formasPagamento.map(formaPagamento => (
+                                    <option key={formaPagamento} value={formaPagamento}>{formaPagamento}</option>
+                                ))}                                
+                            </Select>
+                        </FormControl>
+                    }
+
                     <FormControl mt={4} isRequired>
                         <FormLabel>Categoria</FormLabel>
                         <Select 

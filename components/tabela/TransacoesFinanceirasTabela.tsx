@@ -8,7 +8,7 @@ import {TransacaoFinanceiraModalUpdate} from '../modal';
 import formatValue from '../../utils/formatValue';
 
 export default function TransacoesFinanceirasTabela() {    
-    const { categorias, transacoesFinanceiras, deleteTransacaoFinanceira } = useTransacoesFinanceiras()
+    const { categorias, transacoesFinanceiras, formasPagamento, deleteTransacaoFinanceira } = useTransacoesFinanceiras()
     const [ transacaoFinanceiraUpdate, setTransacaoFinanceiraUpdate ] = useState<TransacoesFinanceiras | undefined>()
     const [ transacoesFinanceirasList, setTransacoesFinanceirasList ] = useState<TransacoesFinanceiras[]>(transacoesFinanceiras)
 
@@ -34,6 +34,15 @@ export default function TransacoesFinanceirasTabela() {
         if (categoria === "all") setTransacoesFinanceirasList(transacoesFinanceiras)
         else {
             setTransacoesFinanceirasList(transacoesFinanceiras.filter(transacao => transacao.categoria === categoria ))
+        }        
+    }
+
+    const handleFiltrarFormaPagamento = (formaPagamento: string) => {
+        if(!formaPagamento) return
+
+        if (formaPagamento === "all") setTransacoesFinanceirasList(transacoesFinanceiras)
+        else {
+            setTransacoesFinanceirasList(transacoesFinanceiras.filter(transacao => transacao.formaPagamento === formaPagamento ))
         }        
     }
 
@@ -92,6 +101,17 @@ export default function TransacoesFinanceirasTabela() {
                             <option key={cat} value={cat}>{cat}</option>
                         ))}
                     </Select>
+
+                    <Select 
+                        w="auto" 
+                        placeholder='Filtrar por forma de pagamento' 
+                        onChange={e => handleFiltrarFormaPagamento(e.target.value)}
+                    >
+                        <option value="all">Todas as formas de pagamento</option>
+                        {formasPagamento.map(formaPagamento => (
+                            <option key={formaPagamento} value={formaPagamento}>{formaPagamento}</option>
+                        ))}
+                    </Select>
                 </HStack>
             </HStack>
 
@@ -103,6 +123,7 @@ export default function TransacoesFinanceirasTabela() {
                         <Th>Categoria</Th>
                         <Th>Tipo</Th>
                         <Th>Valor</Th>
+                        <Th>Forma pagamento</Th>
                         <Th></Th>
                     </Tr>
                 </Thead>
@@ -121,6 +142,7 @@ export default function TransacoesFinanceirasTabela() {
                                 )}
                             </Td>
                             <Td>{formatValue(transacaoFinanceira.valor)}</Td>
+                            <Td>{transacaoFinanceira.status === 'Entrada' ? '-' : transacaoFinanceira.formaPagamento}</Td>
                             <Td>
                                 <IconButton 
                                     onClick={() => updateTransacao(transacaoFinanceira)} 
