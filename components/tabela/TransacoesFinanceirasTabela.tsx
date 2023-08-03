@@ -1,6 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Thead, Tr, Th, Tbody, Td, IconButton, useDisclosure, Button, Badge, HStack, Text, VStack, Select } from '@chakra-ui/react'
-// import { FiEdit2 } from 'react-icons/fi'
+import { 
+    Table,
+    Thead, 
+    Tr, 
+    Th, 
+    Tbody,
+    Td, 
+    IconButton, 
+    useDisclosure, 
+    Button, 
+    Badge, 
+    HStack, 
+    Text, 
+    VStack, 
+    Select,
+    Alert, 
+    AlertIcon,
+} from '@chakra-ui/react'
 import { RiAddFill } from 'react-icons/ri'
 import {AiOutlineEdit, AiFillDelete} from 'react-icons/ai'
 import { TransacoesFinanceiras, useTransacoesFinanceiras } from '../../context/TransacoesFinanceirasContext';
@@ -69,99 +85,108 @@ export default function TransacoesFinanceirasTabela() {
             spacing="8"
         >
             <HStack justifyContent="space-between" w="full">
-                <Text fontSize='2xl' fontWeight="semibold">Transações</Text>
-
-                <HStack spacing="2">
-                    <Button
-                        onClick={adicionaTransacao}
-                        leftIcon={<RiAddFill size={22}/>} 
-                        colorScheme='blue' 
-                        variant='solid'
-                    >
-                        Nova transacao
-                    </Button>                    
-
-                    <Select 
-                        w="auto" 
-                        placeholder='Filtrar por tipo de transação' 
-                        onChange={e => handleFiltrarStatus(e.target.value)}
-                    >
-                        <option value="all">Todos</option>
-                        <option value="Entrada">Entrada</option>
-                        <option value="Saida">Saida</option>
-                    </Select>
-
-                    <Select 
-                        w="auto" 
-                        placeholder='Filtrar por categoria' 
-                        onChange={e => handleFiltrarCategoria(e.target.value)}
-                    >
-                        <option value="all">Todas as categorias</option>
-                        {categorias.map(cat => (
-                            <option key={cat} value={cat}>{cat}</option>
-                        ))}
-                    </Select>
-
-                    <Select 
-                        w="auto" 
-                        placeholder='Filtrar por forma de pagamento' 
-                        onChange={e => handleFiltrarFormaPagamento(e.target.value)}
-                    >
-                        <option value="all">Todas as formas de pagamento</option>
-                        {formasPagamento.map(formaPagamento => (
-                            <option key={formaPagamento} value={formaPagamento}>{formaPagamento}</option>
-                        ))}
-                    </Select>
-                </HStack>
+                <Text fontSize='2xl' fontWeight="semibold">Últimas transações</Text>
             </HStack>
 
-            <Table>
-                <Thead>
-                    <Tr>
-                        <Th>Descrição</Th>
-                        <Th>Data</Th>
-                        <Th>Categoria</Th>
-                        <Th>Tipo</Th>
-                        <Th>Valor</Th>
-                        <Th>Forma pagamento</Th>
-                        <Th></Th>
-                    </Tr>
-                </Thead>
+            <HStack spacing="5">                    
+                <Select 
+                    w="auto" 
+                    placeholder='Filtrar por tipo de transação' 
+                    onChange={e => handleFiltrarStatus(e.target.value)}
+                >
+                    <option value="all">Todos</option>
+                    <option value="Entrada">Entrada</option>
+                    <option value="Saida">Saida</option>
+                </Select>
 
-                <Tbody>
-                    {transacoesFinanceirasList.map(transacaoFinanceira => (
-                        <Tr key={transacaoFinanceira.id}>
-                            <Td>{transacaoFinanceira.titulo}</Td>
-                            <Td>{new Date(transacaoFinanceira.data).toLocaleDateString('pt-BR')}</Td>
-                            <Td>{transacaoFinanceira.categoria}</Td>
-                            <Td>
-                                {transacaoFinanceira.status === 'Entrada' ? (
-                                    <Badge colorScheme='green'>Entrada</Badge>
-                                    ) : (
-                                    <Badge colorScheme='red'>Saida</Badge>
-                                )}
-                            </Td>
-                            <Td>{formatValue(transacaoFinanceira.valor)}</Td>
-                            <Td>{transacaoFinanceira.status === 'Entrada' ? '-' : transacaoFinanceira.formaPagamento}</Td>
-                            <Td>
-                                <IconButton 
-                                    onClick={() => updateTransacao(transacaoFinanceira)} 
-                                    aria-label='Editar transacao' 
-                                    icon={<AiOutlineEdit />} 
-                                    isRound 
-                                    marginRight={2} 
-                                />
-                                <IconButton 
-                                    onClick={() => deleteTransacaoFinanceira(transacaoFinanceira.id)} 
-                                    aria-label='Excluir transacao' 
-                                    icon={<AiFillDelete color='red' />} 
-                                    isRound 
-                                />
-                            </Td>
-                        </Tr>
+                <Select 
+                    w="auto" 
+                    placeholder='Filtrar por categoria' 
+                    onChange={e => handleFiltrarCategoria(e.target.value)}
+                >
+                    <option value="all">Todas as categorias</option>
+                    {categorias.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
                     ))}
-                </Tbody>
-            </Table>
+                </Select>
+
+                <Select 
+                    w="auto" 
+                    placeholder='Filtrar por forma de pagamento' 
+                    onChange={e => handleFiltrarFormaPagamento(e.target.value)}
+                >
+                    <option value="all">Todas as formas de pagamento</option>
+                    {formasPagamento.map(formaPagamento => (
+                        <option key={formaPagamento} value={formaPagamento}>{formaPagamento}</option>
+                    ))}
+                </Select>
+
+                <Button
+                    onClick={adicionaTransacao}
+                    leftIcon={<RiAddFill size={22}/>} 
+                    colorScheme='messenger' 
+                    variant='solid'
+                >
+                    Nova transacao
+                </Button> 
+            </HStack>
+            
+            {transacoesFinanceiras.length === 0 &&
+                <Alert status='info'>
+                    <AlertIcon />
+                    Ainda não há transações financeiras cadastradas.
+                </Alert>
+            }
+
+            {transacoesFinanceirasList.length > 0 &&                        
+                <Table>
+                    <Thead>
+                        <Tr>
+                            <Th>Descrição</Th>
+                            <Th>Data</Th>
+                            <Th>Categoria</Th>
+                            <Th>Tipo</Th>
+                            <Th>Valor</Th>
+                            <Th>Forma pagamento</Th>
+                            <Th></Th>
+                        </Tr>
+                    </Thead>
+
+                    <Tbody>
+                        {transacoesFinanceirasList.map(transacaoFinanceira => (
+                            <Tr key={transacaoFinanceira.id}>
+                                <Td>{transacaoFinanceira.titulo}</Td>
+                                <Td>{new Date(transacaoFinanceira.data).toLocaleDateString('pt-BR')}</Td>
+                                <Td>{transacaoFinanceira.categoria}</Td>
+                                <Td>
+                                    {transacaoFinanceira.status === 'Entrada' ? (
+                                        <Badge colorScheme='green'>Entrada</Badge>
+                                        ) : (
+                                        <Badge colorScheme='red'>Saida</Badge>
+                                    )}
+                                </Td>
+                                <Td>{formatValue(transacaoFinanceira.valor)}</Td>
+                                <Td>{transacaoFinanceira.status === 'Entrada' ? '-' : transacaoFinanceira.formaPagamento}</Td>
+                                <Td>
+                                    <IconButton 
+                                        onClick={() => updateTransacao(transacaoFinanceira)} 
+                                        aria-label='Editar transacao' 
+                                        icon={<AiOutlineEdit />} 
+                                        isRound 
+                                        marginRight={2} 
+                                    />
+                                    <IconButton 
+                                        onClick={() => deleteTransacaoFinanceira(transacaoFinanceira.id)} 
+                                        aria-label='Excluir transacao' 
+                                        icon={<AiFillDelete color='red' />} 
+                                        isRound 
+                                    />
+                                </Td>
+                            </Tr>
+                        ))}
+                    </Tbody>
+                </Table>
+            }
 
             <TransacaoFinanceiraModalUpdate
                 transacaoFinanceira={transacaoFinanceiraUpdate}
