@@ -1,4 +1,4 @@
-import type { AppProps } from 'next/app'
+import { AppProps } from 'next/app'
 import { Box, ChakraProvider } from '@chakra-ui/react'
 import { TransacoesFinanceirasProvider } from '../context/TransacoesFinanceirasContext';
 
