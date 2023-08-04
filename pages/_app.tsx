@@ -2,7 +2,7 @@ import { AppProps } from 'next/app'
 import { Box, ChakraProvider } from '@chakra-ui/react'
 import { TransacoesFinanceirasProvider } from '../context/TransacoesFinanceirasContext';
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps ):JSX.Element{
     return (
         <ChakraProvider>
             <TransacoesFinanceirasProvider>
